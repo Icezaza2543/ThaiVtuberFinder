@@ -1,0 +1,28 @@
+services:
+  finder:
+    build: .
+    restart: unless-stopped
+    init: true
+    env_file: .env
+    environment:
+      FINDER_DB: /app/data/finder.sqlite
+      HEALTH_ADDRESS: 0.0.0.0:8080
+      GOOGLE_APPLICATION_CREDENTIALS: /run/secrets/google-service-account.json
+    volumes:
+      - finder-data:/app/data
+      - ./config:/app/config:ro
+      - ./secrets:/run/secrets:ro
+    ports:
+      - "127.0.0.1:8080:8080"
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 512m
+    pids_limit: 128
+    stop_grace_period: 40s
+volumes:
+  finder-data:

@@ -1,0 +1,17 @@
+.env
+.env.*
+!.env.example
+secrets/
+data/
+exports/
+runtime/
+bin/
+*.sqlite
+*.sqlite-*
+*.db
+*.db-*
+*.lock
+*.pem
+*.key
+coverage.out
+.superpowers/

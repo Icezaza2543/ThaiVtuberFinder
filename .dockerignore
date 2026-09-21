@@ -1,0 +1,13 @@
+.git
+.env
+.env.*
+secrets
+exports
+runtime
+bin
+*.sqlite
+*.db
+coverage.out
+.superpowers
+
+data

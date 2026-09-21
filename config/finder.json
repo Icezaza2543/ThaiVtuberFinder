@@ -1,0 +1,52 @@
+{
+  "database": "data/finder.sqlite",
+  "interval": "6h",
+  "cycle_timeout": "15m",
+  "workers": 4,
+  "resolve_youtube": true,
+  "youtube_daily_budget": 500,
+  "sheet_sync": false,
+  "spreadsheet_id": "",
+  "canonical_file": "",
+  "health_address": "127.0.0.1:8080",
+  "sources": [
+    {
+      "name": "kerlos-chuysan-directory",
+      "kind": "kerlos",
+      "enabled": true,
+      "url": "https://storage.googleapis.com/thaivtuberranking.appspot.com/v2/channel_data/simple_list.json",
+      "max_items": 10000,
+      "max_pages": 1
+    },
+    {
+      "name": "local-review-import",
+      "kind": "jsonl",
+      "enabled": false,
+      "path": "data/leads.jsonl",
+      "max_items": 10000
+    },
+    {
+      "name": "curated-event-roster",
+      "kind": "html",
+      "enabled": false,
+      "url": "",
+      "max_items": 1000
+    },
+    {
+      "name": "curated-bluesky-pack",
+      "kind": "bluesky_starterpack",
+      "enabled": false,
+      "url": "",
+      "max_pages": 10,
+      "max_items": 1000
+    },
+    {
+      "name": "youtube-debut-search",
+      "kind": "youtube_search",
+      "enabled": false,
+      "query": "VTuberTH debut",
+      "max_pages": 1,
+      "max_items": 50
+    }
+  ]
+}
