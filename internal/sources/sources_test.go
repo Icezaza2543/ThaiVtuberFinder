@@ -19,6 +19,16 @@ func TestRosterLinks(t *testing.T) {
 		t.Fatalf("%v %+v", e, leads)
 	}
 }
+func TestParseRawLinks(t *testing.T) {
+	raw := `{"members": ["https://youtube.com/@Example", "https://twitch.tv/ExampleTwitch"]}`
+	leads, err := ParseRawLinks(raw, "https://api.example.com/roster.json", 10)
+	if err != nil || len(leads) != 2 {
+		t.Fatalf("unexpected leads: %v, len=%d", err, len(leads))
+	}
+	if leads[0].Account.Platform != "youtube" || leads[1].Account.Platform != "twitch" {
+		t.Fatalf("unexpected accounts: %+v", leads)
+	}
+}
 func TestDirectoryShape(t *testing.T) {
 	leads, e := ParseDirectory([]byte(`{"result":[{"channel_id":"UCaaaaaaaaaaaaaaaaaaaaaa","title":"Example VTuberTH"}]}`), "https://example.org/feed", 10)
 	if e != nil || len(leads) != 1 {

@@ -30,6 +30,28 @@ type Candidate struct {
 	MatchState     string `json:"match_state"`
 }
 
+type CandidateSource struct {
+	CandidateID  string `json:"candidate_id"`
+	SourceName   string `json:"source_name"`
+	SourceURL    string `json:"source_url"`
+	DiscoveredAt string `json:"discovered_at"`
+}
+
+type RelationProposal struct {
+	ProposalID      string `json:"proposal_id"`
+	FromCandidateID string `json:"from_candidate_id"`
+	FromPlatform    string `json:"from_platform"`
+	FromPlatformID  string `json:"from_platform_id"`
+	ToPlatform      string `json:"to_platform"`
+	ToPlatformID    string `json:"to_platform_id"`
+	ToURL           string `json:"to_url"`
+	EvidenceURL     string `json:"evidence_url"`
+	EvidenceType    string `json:"evidence_type"`
+	Confidence      string `json:"confidence"`
+	CreatedAt       string `json:"created_at"`
+	ReviewStatus    string `json:"review_status"`
+}
+
 var YouTubeID = regexp.MustCompile(`^UC[A-Za-z0-9_-]{22}$`)
 var videoID = regexp.MustCompile(`^[A-Za-z0-9_-]{11}$`)
 var handle = regexp.MustCompile(`^[\p{L}\p{N}_.-]+$`)

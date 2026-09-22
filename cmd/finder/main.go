@@ -7,6 +7,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/Icezaza2543/ThaiVtuberFinder/internal/app"
+	"github.com/Icezaza2543/ThaiVtuberFinder/internal/enrich"
 	"github.com/Icezaza2543/ThaiVtuberFinder/internal/netx"
 	"github.com/Icezaza2543/ThaiVtuberFinder/internal/sheets"
 	"github.com/Icezaza2543/ThaiVtuberFinder/internal/sources"
@@ -59,7 +60,7 @@ func writeJSON(path string, value any) error {
 }
 func run(args []string) error {
 	if len(args) == 0 || args[0] == "help" || args[0] == "--help" {
-		fmt.Println("ThaiVtuberFinder " + version + "\nCommands: once, worker, import, export, compare, status, doctor, demo, healthcheck\nUse: finder <command> -config config/finder.json [-file path] [-out path]\nexport creates reviewed proposals; compare needs -canonical <bootstrap.json>.")
+		fmt.Println("ThaiVtuberFinder " + version + "\nCommands: once, worker, import, export, compare, status, doctor, demo, healthcheck, enrich, proposals\nUse: finder <command> -config config/finder.json [-file path] [-out path]\nexport creates reviewed proposals; compare needs -canonical <bootstrap.json>.")
 		return nil
 	}
 	if args[0] == "version" {
@@ -73,6 +74,10 @@ func run(args []string) error {
 	out := fs.String("out", "", "output JSON file (default stdout)")
 	canonical := fs.String("canonical", "", "canonical registry/bootstrap JSON")
 	health := fs.String("url", "http://127.0.0.1:8080/healthz", "health check URL")
+	limit := fs.Int("limit", 100, "enrich batch limit")
+	offset := fs.Int("offset", 0, "enrich batch offset")
+	platform := fs.String("platform", "bluesky", "enrich source platform")
+	syncSheet := fs.Bool("sync-sheet", false, "sync to Google Sheet after enrich")
 	if e := fs.Parse(args[1:]); e != nil {
 		return e
 	}
@@ -192,6 +197,71 @@ func run(args []string) error {
 			}
 		}
 		return writeJSON(*out, map[string]any{"status": "ok", "version": version, "sheet_sync": c.SheetSync, "youtube_key_configured": a.Engine.APIKey != "", "note": "doctor validates connectivity/configuration; it does not prove discovery completeness"})
+	case "enrich":
+		targetPlatform := *platform
+		if targetPlatform == "" {
+			targetPlatform = "bluesky"
+		}
+		cands, err := a.Store.CandidatesByPlatform(targetPlatform)
+		if err != nil {
+			return fmt.Errorf("candidates by platform error: %w", err)
+		}
+		var knownCanonical map[string]string
+		var knownInbox = map[string]string{}
+		if a.Sheets != nil {
+			accounts, links, personas, inbox, terr := a.Sheets.Tables(ctx)
+			if terr == nil {
+				kc, _, cerr := sheets.CanonicalKeys(accounts, links, personas)
+				if cerr == nil {
+					knownCanonical = kc
+				}
+				for _, r := range inbox[1:] {
+					acc := sheets.RowAccount(r)
+					if acc.URL != "" {
+						knownInbox[acc.Key()] = r[0]
+						knownInbox[acc.Platform+":url:"+acc.URL] = r[0]
+					}
+				}
+			}
+		}
+		allCands, _ := a.Store.Candidates()
+		for _, c := range allCands {
+			knownInbox[c.Key()] = c.ID
+			if c.URL != "" {
+				knownInbox[c.Platform+":url:"+c.URL] = c.ID
+			}
+		}
+		net := netx.New()
+		enricher := &enrich.Enricher{
+			Client:          net,
+			Store:           a.Store,
+			BlueskyBase:     "https://public.api.bsky.app",
+			KnownCanonical:  knownCanonical,
+			KnownInbox:      knownInbox,
+			YouTubeResolver: a.Engine.Resolve,
+		}
+		rep, err := enricher.RunBatch(ctx, cands, *limit, *offset)
+		if err != nil {
+			return err
+		}
+		if *syncSheet && a.Sheets != nil {
+			updatedCands, uerr := a.Store.Candidates()
+			if uerr == nil {
+				repUpdates, serr := a.Sheets.Sync(ctx, updatedCands)
+				if serr == nil {
+					fmt.Fprintf(os.Stderr, "synced %d range updates to FINDER_INBOX\n", repUpdates)
+				} else {
+					fmt.Fprintf(os.Stderr, "sheet sync error: %v\n", serr)
+				}
+			}
+		}
+		return writeJSON(*out, rep)
+	case "proposals":
+		props, err := a.Store.RelationProposals()
+		if err != nil {
+			return err
+		}
+		return writeJSON(*out, props)
 	default:
 		return fmt.Errorf("unknown command %q", args[0])
 	}

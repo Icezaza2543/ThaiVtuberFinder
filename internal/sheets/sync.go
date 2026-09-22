@@ -24,7 +24,7 @@ func checkInbox(rows [][]string) error {
 	return nil
 }
 func padded(row []string) []string { v := make([]string, 20); copy(v, row); return v }
-func rowAccount(row []string) model.Account {
+func RowAccount(row []string) model.Account {
 	r := padded(row)
 	a := model.Account{Platform: r[1], PlatformID: r[2], Handle: r[3], Name: r[4], URL: r[5]}
 	if a.URL != "" {
@@ -63,7 +63,7 @@ func PlanSync(existing [][]string, candidates []model.Candidate, known map[strin
 			return nil, errors.New("duplicate candidate_id in inbox")
 		}
 		byID[row[0]] = i + 1
-		a := rowAccount(r)
+		a := RowAccount(r)
 		if a.Platform != "" && a.URL != "" {
 			k := a.Key()
 			if prevIdx, ok := byKey[k]; !ok {

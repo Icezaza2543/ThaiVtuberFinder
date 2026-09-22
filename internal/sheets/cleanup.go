@@ -62,7 +62,7 @@ func FindDuplicateInboxGroups(rows [][]string) ([]DuplicateGroup, error) {
 		if row[0] == "" {
 			continue
 		}
-		a := rowAccount(r)
+		a := RowAccount(r)
 		if a.Platform != "" && a.URL != "" {
 			k := a.Key()
 			byKey[k] = append(byKey[k], DuplicateEntry{

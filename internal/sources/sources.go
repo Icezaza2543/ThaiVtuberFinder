@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/Icezaza2543/ThaiVtuberFinder/internal/enrich"
 	"github.com/Icezaza2543/ThaiVtuberFinder/internal/model"
 	"github.com/Icezaza2543/ThaiVtuberFinder/internal/netx"
 	"github.com/Icezaza2543/ThaiVtuberFinder/internal/store"
@@ -87,11 +88,40 @@ func (e *Engine) Discover(ctx context.Context, c Config) ([]Lead, error) {
 		return parseCSV(r, limit)
 	case "bluesky_list", "bluesky_starterpack":
 		return e.bluesky(ctx, c, limit)
+	case "raw_links":
+		b, err := e.Client.Bytes(ctx, "GET", c.URL, nil, nil, nil)
+		if err != nil {
+			return nil, err
+		}
+		return ParseRawLinks(string(b), c.URL, limit)
 	case "youtube_search":
 		return e.searchYouTube(ctx, c, limit)
 	default:
 		return nil, fmt.Errorf("unsupported source kind: %s", c.Kind)
 	}
+}
+
+func ParseRawLinks(body, source string, limit int) ([]Lead, error) {
+	links := enrich.ExtractLinks(body)
+	out := make([]Lead, 0, len(links))
+	seen := map[string]bool{}
+	for _, raw := range links {
+		a, err := model.Normalize(raw)
+		if err != nil || a.Platform == "" || seen[a.Key()] {
+			continue
+		}
+		seen[a.Key()] = true
+		a.ClassificationHint = "ORGANIZATION_ROSTER"
+		a.ThaiRelevanceHint = "thai_signal"
+		out = append(out, Lead{Account: a, SourceURL: source})
+		if len(out) >= limit {
+			break
+		}
+	}
+	if len(out) == 0 {
+		return nil, errors.New("no supported account links found in source")
+	}
+	return out, nil
 }
 func ParseDirectory(b []byte, source string, limit int) ([]Lead, error) {
 	var doc struct {
