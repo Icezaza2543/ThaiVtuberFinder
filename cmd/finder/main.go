@@ -282,22 +282,22 @@ func run(args []string) error {
 		aCount := len(tables["ACCOUNTS"]) - 1
 		lCount := len(tables["ACCOUNT_LINKS"]) - 1
 		iCount := len(tables["FINDER_INBOX"]) - 1
-		inbox := tables["FINDER_INBOX"]
 		dupGroups, _ := sheets.FindDuplicateInboxGroups(inbox)
 		totalDups := 0
 		for _, g := range dupGroups {
-			totalDups += len(g.Entries) - 1
+			totalDups += len(g.Losers)
 		}
 		cands, _ := a.Store.Candidates()
 		bskyCands, _ := a.Store.CandidatesByPlatform("bluesky")
 		props, _ := a.Store.RelationProposals()
-		invOK := (pCount == 909 && aCount == 4735 && lCount == 2706 && totalDups == 0)
+		invOK := (pCount == 909 && aCount == 4735 && lCount == 2706 && len(dupGroups) == 0)
 		res := map[string]any{
 			"personas":                 pCount,
 			"accounts":                 aCount,
 			"account_links":            lCount,
 			"finder_inbox":             iCount,
-			"duplicate_inbox_keys":     totalDups,
+			"duplicate_inbox_keys":     len(dupGroups),
+			"duplicate_inbox_rows":     totalDups,
 			"total_candidates":         len(cands),
 			"bluesky_candidates":       len(bskyCands),
 			"relation_proposals_total": len(props),
