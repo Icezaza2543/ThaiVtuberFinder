@@ -105,6 +105,38 @@
       "max_items": 500
     },
     {
+      "name": "vtuberth-bluesky-rokunines",
+      "kind": "bluesky_starterpack",
+      "enabled": true,
+      "url": "https://bsky.app/starter-pack/rokunines.bsky.social/3l6skytkbqd25",
+      "max_pages": 10,
+      "max_items": 500
+    },
+    {
+      "name": "vtuberth-bluesky-siamese-vtubies-2",
+      "kind": "bluesky_starterpack",
+      "enabled": true,
+      "url": "https://bsky.app/starter-pack/chloejparkv2ber.bsky.social/3l6rrusznap2m",
+      "max_pages": 10,
+      "max_items": 500
+    },
+    {
+      "name": "vtuberth-bluesky-cat-vtuber",
+      "kind": "bluesky_starterpack",
+      "enabled": true,
+      "url": "https://bsky.app/starter-pack/jaojan108.bsky.social/3l6q3hbcyrq23",
+      "max_pages": 10,
+      "max_items": 500
+    },
+    {
+      "name": "vtuberth-bluesky-pipekun",
+      "kind": "bluesky_starterpack",
+      "enabled": true,
+      "url": "https://bsky.app/starter-pack/pipekun.bsky.social/3l6qwms7d3w26",
+      "max_pages": 10,
+      "max_items": 500
+    },
+    {
       "name": "youtube-debut-search",
       "kind": "youtube_search",
       "enabled": false,
