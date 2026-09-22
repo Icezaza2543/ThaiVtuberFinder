@@ -151,7 +151,7 @@ func run(args []string) error {
 		c.Sources = []sources.Config{{Name: "manual-import", Kind: *kind, Path: *file, Enabled: true, MaxItems: 20000}}
 	}
 	var a *app.App
-	if args[0] == "status" || args[0] == "compare" || args[0] == "doctor" || args[0] == "proposals" || args[0] == "enrich" {
+	if args[0] == "status" || args[0] == "compare" || args[0] == "doctor" || args[0] == "proposals" || args[0] == "enrich" || args[0] == "verify" {
 		a, e = app.NewUnlocked(c)
 	} else {
 		a, e = app.New(c)
@@ -270,6 +270,40 @@ func run(args []string) error {
 			return err
 		}
 		return writeJSON(*out, props)
+	case "verify":
+		if a.Sheets == nil {
+			return errors.New("sheet sync not configured")
+		}
+		tables, err := a.Sheets.Tables(ctx)
+		if err != nil {
+			return err
+		}
+		pCount := len(tables["PERSONAS"]) - 1
+		aCount := len(tables["ACCOUNTS"]) - 1
+		lCount := len(tables["ACCOUNT_LINKS"]) - 1
+		iCount := len(tables["FINDER_INBOX"]) - 1
+		inbox := tables["FINDER_INBOX"]
+		dupGroups, _ := sheets.FindDuplicateInboxGroups(inbox)
+		totalDups := 0
+		for _, g := range dupGroups {
+			totalDups += len(g.Entries) - 1
+		}
+		cands, _ := a.Store.Candidates()
+		bskyCands, _ := a.Store.CandidatesByPlatform("bluesky")
+		props, _ := a.Store.RelationProposals()
+		invOK := (pCount == 909 && aCount == 4735 && lCount == 2706 && totalDups == 0)
+		res := map[string]any{
+			"personas":                 pCount,
+			"accounts":                 aCount,
+			"account_links":            lCount,
+			"finder_inbox":             iCount,
+			"duplicate_inbox_keys":     totalDups,
+			"total_candidates":         len(cands),
+			"bluesky_candidates":       len(bskyCands),
+			"relation_proposals_total": len(props),
+			"canonical_invariant_ok":   invOK,
+		}
+		return writeJSON(*out, res)
 	default:
 		return fmt.Errorf("unknown command %q", args[0])
 	}
