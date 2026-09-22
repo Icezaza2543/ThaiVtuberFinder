@@ -26,7 +26,22 @@ func checkInbox(rows [][]string) error {
 func padded(row []string) []string { v := make([]string, 20); copy(v, row); return v }
 func rowAccount(row []string) model.Account {
 	r := padded(row)
-	return model.Account{Platform: r[1], PlatformID: r[2], Handle: r[3], Name: r[4], URL: r[5]}
+	a := model.Account{Platform: r[1], PlatformID: r[2], Handle: r[3], Name: r[4], URL: r[5]}
+	if a.URL != "" {
+		if norm, err := model.Normalize(a.URL); err == nil {
+			if a.Platform == "" {
+				a.Platform = norm.Platform
+			}
+			if a.PlatformID == "" && norm.PlatformID != "" {
+				a.PlatformID = norm.PlatformID
+			}
+			if a.Handle == "" && norm.Handle != "" {
+				a.Handle = norm.Handle
+			}
+			a.URL = norm.URL
+		}
+	}
+	return a
 }
 func PlanSync(existing [][]string, candidates []model.Candidate, known map[string]string) ([]Update, error) {
 	if e := checkInbox(existing); e != nil {

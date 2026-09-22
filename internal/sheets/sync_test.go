@@ -164,5 +164,10 @@ func TestExistingDuplicateAccountKeyDoesNotBlockSyncAndDoesNotDuplicate(t *testi
 	if planReviewed[0].Values[0][0] != "cand_2" {
 		t.Fatalf("expected candidate_id to be preserved as cand_2, got %s", planReviewed[0].Values[0][0])
 	}
+	for _, u := range planReviewed {
+		if strings.Contains(u.Range, ":S") || strings.Contains(u.Range, ":L") || strings.Contains(u.Range, "!L") {
+			t.Fatalf("machine sync must never overwrite review columns L:S: %s", u.Range)
+		}
+	}
 }
 

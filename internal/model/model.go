@@ -35,10 +35,32 @@ var videoID = regexp.MustCompile(`^[A-Za-z0-9_-]{11}$`)
 var handle = regexp.MustCompile(`^[\p{L}\p{N}_.-]+$`)
 
 func (a Account) Key() string {
-	if a.PlatformID != "" {
-		return a.Platform + ":id:" + a.PlatformID
+	pid := strings.TrimSpace(a.PlatformID)
+	if pid != "" {
+		return a.Platform + ":id:" + pid
 	}
-	return a.Platform + ":url:" + a.URL
+	if a.Platform == "twitch" {
+		h := strings.TrimSpace(a.Handle)
+		if h == "" && a.URL != "" {
+			if norm, err := Normalize(a.URL); err == nil && norm.Platform == "twitch" {
+				return "twitch:url:" + norm.URL
+			}
+		}
+		if h != "" {
+			h = strings.ToLower(strings.TrimPrefix(h, "@"))
+			return "twitch:url:https://www.twitch.tv/" + h
+		}
+	}
+	if a.URL != "" {
+		if norm, err := Normalize(a.URL); err == nil && norm.URL != "" {
+			if norm.PlatformID != "" {
+				return norm.Platform + ":id:" + norm.PlatformID
+			}
+			return norm.Platform + ":url:" + norm.URL
+		}
+	}
+	u := strings.TrimRight(strings.TrimSpace(a.URL), "/")
+	return a.Platform + ":url:" + u
 }
 func Normalize(raw string) (Account, error) {
 	a := Account{}
