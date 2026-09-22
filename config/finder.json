@@ -144,6 +144,13 @@
       "max_items": 500
     },
     {
+      "name": "astars-official-roster",
+      "kind": "raw_links",
+      "enabled": true,
+      "url": "https://astars-production.com/th/talents",
+      "max_items": 100
+    },
+    {
       "name": "youtube-debut-search",
       "kind": "youtube_search",
       "enabled": false,

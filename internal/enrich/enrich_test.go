@@ -48,11 +48,12 @@ Twitch : twitch.tv/venuslapirus!
 carrd: https://darchellevtuber.carrd.co/
 tiktok: https://www.tiktok.com/@jina_vr?lang=th
 twitter: (x.com/Alvazerius), check it out!
+discord: https://discord.gg/dJSTYnFfSU✨มอบแฟนอาร์ต
 bsky: https://bsky.app/profile/venuslapis.bsky.social`
 
 	links := ExtractLinks(text)
-	if len(links) != 5 {
-		t.Fatalf("expected 5 links, got %d: %+v", len(links), links)
+	if len(links) != 6 {
+		t.Fatalf("expected 6 links, got %d: %+v", len(links), links)
 	}
 
 	expected := []string{
@@ -61,6 +62,7 @@ bsky: https://bsky.app/profile/venuslapis.bsky.social`
 		"https://darchellevtuber.carrd.co",
 		"https://www.tiktok.com/@jina_vr?lang=th",
 		"https://x.com/Alvazerius",
+		"https://discord.gg/dJSTYnFfSU",
 	}
 
 	for i, exp := range expected {
