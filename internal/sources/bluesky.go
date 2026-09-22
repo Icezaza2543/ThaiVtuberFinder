@@ -95,8 +95,11 @@ func (e *Engine) bluesky(ctx context.Context, c Config, limit int) ([]Lead, erro
 			seen[a.Key()] = true
 			a.Name = p.Name
 			a.Handle = p.Handle
-			a.Description = p.Description
-			out = append(out, Lead{a, a.URL})
+			src := c.URL
+			if src == "" {
+				src = a.URL
+			}
+			out = append(out, Lead{a, src})
 		}
 		if doc.Cursor == "" {
 			return out, nil

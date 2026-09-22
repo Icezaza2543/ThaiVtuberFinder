@@ -33,12 +33,12 @@
       "max_items": 1000
     },
     {
-      "name": "curated-bluesky-pack",
+      "name": "vtuberth-bluesky-rosinemidg",
       "kind": "bluesky_starterpack",
-      "enabled": false,
-      "url": "",
+      "enabled": true,
+      "url": "https://bsky.app/starter-pack/rosinemidg.bsky.social/3l6rhlnmb7i2g",
       "max_pages": 10,
-      "max_items": 1000
+      "max_items": 500
     },
     {
       "name": "youtube-debut-search",
