@@ -65,6 +65,46 @@
       "max_items": 500
     },
     {
+      "name": "vtuberth-bluesky-arp-l1mou",
+      "kind": "bluesky_starterpack",
+      "enabled": true,
+      "url": "https://bsky.app/starter-pack/l1mouarp.bsky.social/3mau46n6s7e2x",
+      "max_pages": 10,
+      "max_items": 500
+    },
+    {
+      "name": "vtuberth-bluesky-srv-project",
+      "kind": "bluesky_starterpack",
+      "enabled": true,
+      "url": "https://bsky.app/starter-pack/srv-project.bsky.social/3l6zetlz2vk2o",
+      "max_pages": 10,
+      "max_items": 500
+    },
+    {
+      "name": "vtuberth-bluesky-rosinemidg-p2",
+      "kind": "bluesky_starterpack",
+      "enabled": true,
+      "url": "https://bsky.app/starter-pack/rosinemidg.bsky.social/3l6rrcdklqg23",
+      "max_pages": 10,
+      "max_items": 500
+    },
+    {
+      "name": "vtuberth-bluesky-rosinemidg-p3",
+      "kind": "bluesky_starterpack",
+      "enabled": true,
+      "url": "https://bsky.app/starter-pack/rosinemidg.bsky.social/3l6shg74lxw26",
+      "max_pages": 10,
+      "max_items": 500
+    },
+    {
+      "name": "vtuberth-bluesky-siamese-vtubies",
+      "kind": "bluesky_starterpack",
+      "enabled": true,
+      "url": "https://bsky.app/starter-pack/chloejparkv2ber.bsky.social/3l6pqgaeikj2n",
+      "max_pages": 10,
+      "max_items": 500
+    },
+    {
       "name": "youtube-debut-search",
       "kind": "youtube_search",
       "enabled": false,
