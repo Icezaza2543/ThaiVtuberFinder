@@ -281,7 +281,8 @@ func run(args []string) error {
 		pCount := len(tables["PERSONAS"]) - 1
 		aCount := len(tables["ACCOUNTS"]) - 1
 		lCount := len(tables["ACCOUNT_LINKS"]) - 1
-		iCount := len(tables["FINDER_INBOX"]) - 1
+		inbox := tables["FINDER_INBOX"]
+		iCount := len(inbox) - 1
 		dupGroups, _ := sheets.FindDuplicateInboxGroups(inbox)
 		totalDups := 0
 		for _, g := range dupGroups {
