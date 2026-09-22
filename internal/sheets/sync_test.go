@@ -112,3 +112,57 @@ func TestSyncKeepsOriginalFirstSeenAfterLocalReset(t *testing.T) {
 		t.Fatal("lost original first_seen", e)
 	}
 }
+
+func TestExistingDuplicateAccountKeyDoesNotBlockSyncAndDoesNotDuplicate(t *testing.T) {
+	c := candidate()
+	row1 := make([]string, 20)
+	row1[0] = "cand_1"
+	row1[1] = c.Platform
+	row1[2] = c.PlatformID
+	row1[5] = c.URL
+	row1[11] = "pending"
+	row1[9] = "2026-09-20T00:00:00Z"
+
+	row2 := make([]string, 20)
+	row2[0] = "cand_2"
+	row2[1] = c.Platform
+	row2[2] = c.PlatformID
+	row2[5] = c.URL
+	row2[11] = "pending"
+	row2[9] = "2026-09-21T00:00:00Z"
+
+	rows := [][]string{InboxHeaders, row1, row2}
+	c.ID = "cand_new"
+	plan, e := PlanSync(rows, []model.Candidate{c}, nil)
+	if e != nil {
+		t.Fatalf("PlanSync should not fail on existing duplicate account keys: %v", e)
+	}
+	if len(plan) != 2 {
+		t.Fatalf("expected 2 updates (A:K and T) for existing row, got %d", len(plan))
+	}
+	if plan[0].Range != "'FINDER_INBOX'!A2:K2" {
+		t.Fatalf("expected update to row 2 ('FINDER_INBOX'!A2:K2), got %s", plan[0].Range)
+	}
+	if plan[0].Values[0][0] != "cand_1" {
+		t.Fatalf("expected candidate_id to be preserved as cand_1, got %s", plan[0].Values[0][0])
+	}
+
+	// Now verify reviewed row is preferred over pending duplicate row
+	row2[11] = "verified"
+	row2[12] = "link_persona"
+	rowsReviewed := [][]string{InboxHeaders, row1, row2}
+	planReviewed, e := PlanSync(rowsReviewed, []model.Candidate{c}, nil)
+	if e != nil {
+		t.Fatalf("PlanSync failed with reviewed duplicate row: %v", e)
+	}
+	if len(planReviewed) != 2 {
+		t.Fatalf("expected 2 updates for reviewed row, got %d", len(planReviewed))
+	}
+	if planReviewed[0].Range != "'FINDER_INBOX'!A3:K3" {
+		t.Fatalf("expected update to reviewed row 3 ('FINDER_INBOX'!A3:K3), got %s", planReviewed[0].Range)
+	}
+	if planReviewed[0].Values[0][0] != "cand_2" {
+		t.Fatalf("expected candidate_id to be preserved as cand_2, got %s", planReviewed[0].Values[0][0])
+	}
+}
+

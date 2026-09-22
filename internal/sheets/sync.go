@@ -50,10 +50,15 @@ func PlanSync(existing [][]string, candidates []model.Candidate, known map[strin
 		byID[row[0]] = i + 1
 		a := rowAccount(r)
 		if a.Platform != "" && a.URL != "" {
-			if _, ok := byKey[a.Key()]; ok {
-				return nil, errors.New("duplicate account key in inbox; review before syncing")
+			k := a.Key()
+			if prevIdx, ok := byKey[k]; !ok {
+				byKey[k] = i + 1
+			} else {
+				prevRow := padded(existing[prevIdx])
+				if prevRow[11] == "pending" && row[11] != "pending" && row[11] != "" {
+					byKey[k] = i + 1
+				}
 			}
-			byKey[a.Key()] = i + 1
 		}
 	}
 	incoming := append([]model.Candidate{}, candidates...)
