@@ -18,7 +18,7 @@ func (e *Engine) bsky(ctx context.Context, method string, params url.Values, out
 func (e *Engine) bluesky(ctx context.Context, c Config, limit int) ([]Lead, error) {
 	uri := c.URL
 	if c.Kind == "bluesky_starterpack" {
-		if strings.HasPrefix(uri, "https://bsky.app/starter-pack/") {
+		if strings.HasPrefix(uri, "https://bsky.app/starter-pack/") || strings.HasPrefix(uri, "https://bsky.app/start/") {
 			u, _ := url.Parse(uri)
 			p := strings.Split(strings.Trim(u.Path, "/"), "/")
 			if len(p) != 3 {

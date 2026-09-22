@@ -41,6 +41,30 @@
       "max_items": 500
     },
     {
+      "name": "vtuberth-bluesky-yurigura-p1",
+      "kind": "bluesky_starterpack",
+      "enabled": true,
+      "url": "https://bsky.app/starter-pack/yurigura.bsky.social/3l6qzagtxdy2q",
+      "max_pages": 10,
+      "max_items": 500
+    },
+    {
+      "name": "vtuberth-bluesky-yurigura-p2",
+      "kind": "bluesky_starterpack",
+      "enabled": true,
+      "url": "https://bsky.app/starter-pack/yurigura.bsky.social/3l6s2i33eut2r",
+      "max_pages": 10,
+      "max_items": 500
+    },
+    {
+      "name": "vtuberth-bluesky-yurigura-p3",
+      "kind": "bluesky_starterpack",
+      "enabled": true,
+      "url": "https://bsky.app/starter-pack/yurigura.bsky.social/3l6sbs7nim42u",
+      "max_pages": 10,
+      "max_items": 500
+    },
+    {
       "name": "youtube-debut-search",
       "kind": "youtube_search",
       "enabled": false,
