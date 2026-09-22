@@ -209,17 +209,20 @@ func run(args []string) error {
 		var knownCanonical map[string]string
 		var knownInbox = map[string]string{}
 		if a.Sheets != nil {
-			accounts, links, personas, inbox, terr := a.Sheets.Tables(ctx)
+			tables, terr := a.Sheets.Tables(ctx)
 			if terr == nil {
-				kc, _, cerr := sheets.CanonicalKeys(accounts, links, personas)
+				kc, _, cerr := sheets.CanonicalKeys(tables["ACCOUNTS"], tables["ACCOUNT_LINKS"], tables["PERSONAS"])
 				if cerr == nil {
 					knownCanonical = kc
 				}
-				for _, r := range inbox[1:] {
-					acc := sheets.RowAccount(r)
-					if acc.URL != "" {
-						knownInbox[acc.Key()] = r[0]
-						knownInbox[acc.Platform+":url:"+acc.URL] = r[0]
+				inbox := tables["FINDER_INBOX"]
+				if len(inbox) > 1 {
+					for _, r := range inbox[1:] {
+						acc := sheets.RowAccount(r)
+						if acc.URL != "" {
+							knownInbox[acc.Key()] = r[0]
+							knownInbox[acc.Platform+":url:"+acc.URL] = r[0]
+						}
 					}
 				}
 			}
