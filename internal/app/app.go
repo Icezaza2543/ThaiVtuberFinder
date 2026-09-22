@@ -44,16 +44,30 @@ type App struct {
 }
 
 func New(c Config) (*App, error) {
+	return NewWithOptions(c, true)
+}
+
+func NewUnlocked(c Config) (*App, error) {
+	return NewWithOptions(c, false)
+}
+
+func NewWithOptions(c Config, exclusiveLock bool) (*App, error) {
 	if e := c.Validate(); e != nil {
 		return nil, e
 	}
-	lock, e := AcquireLock(c.Database + ".lock")
-	if e != nil {
-		return nil, e
+	var lock *Lock
+	var e error
+	if exclusiveLock {
+		lock, e = AcquireLock(c.Database + ".lock")
+		if e != nil {
+			return nil, e
+		}
 	}
 	db, e := store.Open(c.Database)
 	if e != nil {
-		lock.Close()
+		if lock != nil {
+			lock.Close()
+		}
 		return nil, e
 	}
 	net := netx.New()

@@ -150,7 +150,12 @@ func run(args []string) error {
 		}
 		c.Sources = []sources.Config{{Name: "manual-import", Kind: *kind, Path: *file, Enabled: true, MaxItems: 20000}}
 	}
-	a, e := app.New(c)
+	var a *app.App
+	if args[0] == "status" || args[0] == "compare" || args[0] == "doctor" || args[0] == "proposals" || args[0] == "enrich" {
+		a, e = app.NewUnlocked(c)
+	} else {
+		a, e = app.New(c)
+	}
 	if e != nil {
 		return e
 	}
