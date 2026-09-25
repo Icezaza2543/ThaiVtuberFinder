@@ -78,6 +78,9 @@ func run(args []string) error {
 	offset := fs.Int("offset", 0, "enrich batch offset")
 	platform := fs.String("platform", "bluesky", "enrich source platform")
 	syncSheet := fs.Bool("sync-sheet", false, "sync to Google Sheet after enrich")
+	expPersonas := fs.Int("expect-personas", -1, "verify: expected PERSONAS rows (-1 skips)")
+	expAccounts := fs.Int("expect-accounts", -1, "verify: expected ACCOUNTS rows (-1 skips)")
+	expLinks := fs.Int("expect-links", -1, "verify: expected ACCOUNT_LINKS rows (-1 skips)")
 	if e := fs.Parse(args[1:]); e != nil {
 		return e
 	}
@@ -291,7 +294,10 @@ func run(args []string) error {
 		cands, _ := a.Store.Candidates()
 		bskyCands, _ := a.Store.CandidatesByPlatform("bluesky")
 		props, _ := a.Store.RelationProposals()
-		invOK := (pCount == 909 && aCount == 4735 && lCount == 2706 && len(dupGroups) == 0)
+		invOK := len(dupGroups) == 0 &&
+			(*expPersonas < 0 || pCount == *expPersonas) &&
+			(*expAccounts < 0 || aCount == *expAccounts) &&
+			(*expLinks < 0 || lCount == *expLinks)
 		res := map[string]any{
 			"personas":                 pCount,
 			"accounts":                 aCount,

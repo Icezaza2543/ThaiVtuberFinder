@@ -95,4 +95,3 @@ func TestTwitchAccountNormalizationAndKey(t *testing.T) {
 		t.Fatalf("stable platform ID did not win: got %s", accWithID.Key())
 	}
 }
-
