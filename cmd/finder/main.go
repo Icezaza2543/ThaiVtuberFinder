@@ -11,11 +11,13 @@ import (
 	"github.com/Icezaza2543/ThaiVtuberFinder/internal/netx"
 	"github.com/Icezaza2543/ThaiVtuberFinder/internal/sheets"
 	"github.com/Icezaza2543/ThaiVtuberFinder/internal/sources"
+	"github.com/Icezaza2543/ThaiVtuberFinder/internal/twitch"
 	"io"
 	"net/http"
 	"os"
 	"os/signal"
 	"path/filepath"
+	"strings"
 	"syscall"
 	"time"
 )
@@ -60,7 +62,7 @@ func writeJSON(path string, value any) error {
 }
 func run(args []string) error {
 	if len(args) == 0 || args[0] == "help" || args[0] == "--help" {
-		fmt.Println("ThaiVtuberFinder " + version + "\nCommands: once, worker, import, export, compare, status, doctor, demo, healthcheck, enrich, proposals\nUse: finder <command> -config config/finder.json [-file path] [-out path]\nexport creates reviewed proposals; compare needs -canonical <bootstrap.json>.")
+		fmt.Println("ThaiVtuberFinder " + version + "\nCommands: once, worker, import, export, compare, status, doctor, demo, healthcheck, enrich, proposals, verify, resolve-twitch\nUse: finder <command> -config config/finder.json [-file path] [-out path]\nexport creates reviewed proposals; compare needs -canonical <bootstrap.json>.")
 		return nil
 	}
 	if args[0] == "version" {
@@ -129,6 +131,35 @@ func run(args []string) error {
 			return e
 		}
 		return writeJSON(*out, r)
+	}
+	if args[0] == "resolve-twitch" {
+		if *file == "" {
+			return errors.New("resolve-twitch requires -file (one Twitch URL or login per line)")
+		}
+		raw, e := os.ReadFile(*file)
+		if e != nil {
+			return e
+		}
+		var logins, invalid []string
+		seen := map[string]bool{}
+		for _, line := range strings.Split(string(raw), "\n") {
+			if strings.TrimSpace(line) == "" {
+				continue
+			}
+			l, ok := twitch.Login(line)
+			if !ok {
+				invalid = append(invalid, strings.TrimSpace(line))
+			} else if !seen[l] {
+				seen[l] = true
+				logins = append(logins, l)
+			}
+		}
+		r := &twitch.Resolver{ClientID: os.Getenv("TWITCH_CLIENT_ID"), ClientSecret: os.Getenv("TWITCH_CLIENT_SECRET")}
+		results, e := r.Resolve(ctx, logins)
+		if e != nil {
+			return e
+		}
+		return writeJSON(*out, map[string]any{"results": results, "invalid": invalid})
 	}
 	c, e := app.Load(*config)
 	if e != nil {
