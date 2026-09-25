@@ -94,6 +94,12 @@ func (e *Engine) Discover(ctx context.Context, c Config) ([]Lead, error) {
 			return nil, err
 		}
 		return ParseRawLinks(string(b), c.URL, limit)
+	case "vtuberthaiinfo":
+		b, err := e.Client.Bytes(ctx, "GET", c.URL, nil, nil, nil)
+		if err != nil {
+			return nil, err
+		}
+		return ParseVtuberThaiInfo(string(b), c.URL, limit)
 	case "youtube_search":
 		return e.searchYouTube(ctx, c, limit)
 	default:
@@ -123,6 +129,77 @@ func ParseRawLinks(body, source string, limit int) ([]Lead, error) {
 	}
 	return out, nil
 }
+
+var nextPush = regexp.MustCompile(`self\.__next_f\.push\(\[1,("(?:[^"\\]|\\.)*")\]\)`)
+
+// ParseVtuberThaiInfo reads the talent list embedded in the Next.js payload of
+// the VtuberThaiInfo archive. The listing is a discovery hint only.
+func ParseVtuberThaiInfo(body, source string, limit int) ([]Lead, error) {
+	var payload strings.Builder
+	for _, m := range nextPush.FindAllStringSubmatch(body, -1) {
+		var chunk string
+		if json.Unmarshal([]byte(m[1]), &chunk) == nil {
+			payload.WriteString(chunk)
+		}
+	}
+	text := payload.String()
+	i := strings.Index(text, `{"talents":`)
+	if i < 0 {
+		return nil, errors.New("vtuberthaiinfo schema changed: talents payload not found")
+	}
+	type channel struct {
+		Username    string `json:"username"`
+		ChannelName string `json:"channelName"`
+		ChannelID   string `json:"channelId"`
+	}
+	var doc struct {
+		Talents *[]struct {
+			Name        string   `json:"name"`
+			YouTubeMain *channel `json:"youtubeMain"`
+			TwitchMain  *channel `json:"twitchMain"`
+		} `json:"talents"`
+	}
+	if err := json.NewDecoder(strings.NewReader(text[i:])).Decode(&doc); err != nil || doc.Talents == nil {
+		return nil, errors.New("vtuberthaiinfo schema changed: expected talents[]")
+	}
+	out := []Lead{}
+	seen := map[string]bool{}
+	add := func(raw, name string) {
+		a, err := model.Normalize(raw)
+		if err != nil || a.Platform == "" || seen[a.Key()] {
+			return
+		}
+		seen[a.Key()] = true
+		a.Name = name
+		a.ClassificationHint = "DIRECTORY_LISTED"
+		out = append(out, Lead{a, source})
+	}
+	for _, t := range *doc.Talents {
+		if y := t.YouTubeMain; y != nil && strings.HasPrefix(y.ChannelID, "UC") {
+			add("https://www.youtube.com/channel/"+y.ChannelID, firstNonEmpty(y.ChannelName, t.Name))
+		}
+		if tw := t.TwitchMain; tw != nil && tw.Username != "" {
+			add("https://www.twitch.tv/"+tw.Username, firstNonEmpty(tw.ChannelName, t.Name))
+		}
+		if len(out) >= limit {
+			return out[:limit], errors.New("vtuberthaiinfo item cap reached (partial)")
+		}
+	}
+	if len(out) == 0 {
+		return nil, errors.New("vtuberthaiinfo unexpectedly empty")
+	}
+	return out, nil
+}
+
+func firstNonEmpty(v ...string) string {
+	for _, s := range v {
+		if strings.TrimSpace(s) != "" {
+			return s
+		}
+	}
+	return ""
+}
+
 func ParseDirectory(b []byte, source string, limit int) ([]Lead, error) {
 	var doc struct {
 		Result *[]struct {
