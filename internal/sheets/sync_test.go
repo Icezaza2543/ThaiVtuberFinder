@@ -170,4 +170,3 @@ func TestExistingDuplicateAccountKeyDoesNotBlockSyncAndDoesNotDuplicate(t *testi
 		}
 	}
 }
-
