@@ -122,3 +122,21 @@ func TestResolveCachePreservesClassificationSignal(t *testing.T) {
 		t.Fatal("cache lost signal", e, one.Classification, two.Classification)
 	}
 }
+
+func TestParseVtuberThaiInfo(t *testing.T) {
+	body := `<script>self.__next_f.push([1,"16:[\"$\",\"$L17\",null,{\"datas\":{\"talents\":[{\"name\":\"Example\",\"youtubeMain\":{\"channelName\":\"Example Ch.\",\"channelId\":\"UCaaaaaaaaaaaaaaaaaaaaaa\"},\"twitchMain\":{\"username\":\"ExampleTH\",\"channelId\":\"123\"}},` +
+		`{\"name\":\"Dup\",\"youtubeMain\":{\"channelId\":\"UCaaaaaaaaaaaaaaaaaaaaaa\"},\"twitchMain\":null}]}}]\n"])</script>`
+	leads, err := ParseVtuberThaiInfo(body, "https://example.org/talent", 10)
+	if err != nil || len(leads) != 2 {
+		t.Fatal(err, leads)
+	}
+	if leads[0].Account.Key() != "youtube:id:UCaaaaaaaaaaaaaaaaaaaaaa" || leads[0].Account.Name != "Example Ch." {
+		t.Fatalf("youtube lead: %+v", leads[0].Account)
+	}
+	if leads[1].Account.Platform != "twitch" || leads[1].Account.ClassificationHint != "DIRECTORY_LISTED" {
+		t.Fatalf("twitch lead: %+v", leads[1].Account)
+	}
+	if _, err := ParseVtuberThaiInfo(`<html></html>`, "https://example.org", 10); err == nil {
+		t.Fatal("schema drift hidden")
+	}
+}

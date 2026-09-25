@@ -151,6 +151,13 @@
       "max_items": 100
     },
     {
+      "name": "vtuberthaiinfo-archive",
+      "kind": "vtuberthaiinfo",
+      "enabled": true,
+      "url": "https://vtuberthaiinfo-archive.pages.dev/talent",
+      "max_items": 3000
+    },
+    {
       "name": "youtube-debut-search",
       "kind": "youtube_search",
       "enabled": false,

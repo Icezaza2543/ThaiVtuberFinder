@@ -49,6 +49,7 @@ Current adapters support bounded, explicit public sources such as:
 | Source type | Behavior |
 |---|---|
 | Kerlos/Chuysan | Reads the public Thai VTuber directory feed and resolves stable YouTube channel IDs |
+| VtuberThaiInfo archive | Reads the talent list embedded in the archived VtuberThaiInfo directory; YouTube by stable channel ID, Twitch by normalized URL |
 | Bluesky | Starter packs/lists via public AT Protocol APIs; DID is used as stable identity |
 | Official rosters | Explicit agency/project/event links or structured payloads |
 | HTML roster | Extracts supported account links from explicitly configured static pages |
