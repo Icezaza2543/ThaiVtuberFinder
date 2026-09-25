@@ -26,6 +26,13 @@
       "max_items": 10000
     },
     {
+      "name": "easydonate-seed",
+      "kind": "jsonl",
+      "enabled": true,
+      "path": "config/easydonate-seed.jsonl",
+      "max_items": 1000
+    },
+    {
       "name": "curated-event-roster",
       "kind": "html",
       "enabled": false,

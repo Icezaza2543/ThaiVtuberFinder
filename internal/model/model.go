@@ -176,6 +176,12 @@ func Normalize(raw string) (Account, error) {
 			}
 			return profile("facebook", p, "https://www.facebook.com/")
 		}
+	case "easydonate.app":
+		// Creator donation page. Slug only; payment details are never read or stored.
+		if len(parts) != 1 || strings.Contains("|discovery|dashboard|api|login|register|signup|settings|terms|privacy|about|pricing|help|docs|", "|"+strings.ToLower(p)+"|") {
+			return reject()
+		}
+		return profile("easydonate", p, "https://easydonate.app/")
 	case "bsky.app":
 		if p != "profile" || len(parts) < 2 {
 			return reject()
