@@ -16,12 +16,12 @@ import (
 )
 
 type BackupPayload struct {
-	Timestamp      string                   `json:"timestamp"`
-	SpreadsheetID  string                   `json:"spreadsheet_id"`
-	OriginalRows   int                      `json:"original_rows"`
-	DuplicateCount int                      `json:"duplicate_count"`
+	Timestamp      string                  `json:"timestamp"`
+	SpreadsheetID  string                  `json:"spreadsheet_id"`
+	OriginalRows   int                     `json:"original_rows"`
+	DuplicateCount int                     `json:"duplicate_count"`
 	Groups         []sheets.DuplicateGroup `json:"duplicate_groups"`
-	AllOriginal    [][]string               `json:"all_original_rows"`
+	AllOriginal    [][]string              `json:"all_original_rows"`
 }
 
 func main() {
