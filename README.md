@@ -38,7 +38,7 @@ flowchart LR
 - A new persona/model/re-debut remains a separate persona until explicitly reviewed.
 - Similar names, voices, artwork, handles, or presumed shared operators never justify automatic persona merging.
 - Organization/group accounts stay separate from individual personas.
-- Source membership is a discovery signal, not automatic verification.
+- Source membership is a discovery signal, not automatic verification (exception: the owner-approved VtuberThaiInfo trusted base, applied in ThaiVtuber_DATA, not by Finder).
 - Existing curator fields in `FINDER_INBOX` are preserved during machine sync.
 - `source_url`/provenance must remain traceable.
 
@@ -49,7 +49,8 @@ Current adapters support bounded, explicit public sources such as:
 | Source type | Behavior |
 |---|---|
 | Kerlos/Chuysan | Reads the public Thai VTuber directory feed and resolves stable YouTube channel IDs |
-| VtuberThaiInfo archive | Reads the talent list embedded in the archived VtuberThaiInfo directory; YouTube by stable channel ID, Twitch by normalized URL |
+| VtuberThaiInfo archive | Reads the talent list embedded in the archived VtuberThaiInfo directory; YouTube by stable channel ID, Twitch by normalized URL. The same archive is the owner-approved **trusted persona base** in ThaiVtuber_DATA (imported by ThaiVtuberSNA `scripts/import_vtuberthaiinfo_base.py`) |
+| EasyDonate | `easydonate.app/<slug>` pages are a platform (`easydonate`, slug as handle). Seeds in `config/easydonate-seed.jsonl`; bios linking to EasyDonate are extracted. Only slug/URL are stored — never payment details. easydonate.app blocks non-browser clients (Cloudflare); discovery is done by browsing normally, and the official API (`api.easydonate.app`, `read:creator`, key `EASYDONATE_API_KEY`) only resolves creators that have a creator profile |
 | Bluesky | Starter packs/lists via public AT Protocol APIs; DID is used as stable identity |
 | Official rosters | Explicit agency/project/event links or structured payloads |
 | HTML roster | Extracts supported account links from explicitly configured static pages |
@@ -137,6 +138,21 @@ make check
 ./bin/finder worker
 ./bin/finder status
 ./bin/finder doctor
+```
+
+Verify production invariants (from Git Bash on Windows prefix `MSYS_NO_PATHCONV=1`):
+
+```bash
+railway ssh -- finder verify -config /app/config/finder.json
+```
+
+Expect `canonical_invariant_ok: true` and `duplicate_inbox_rows: 0`.
+
+Resolve Twitch logins to stable numeric user IDs (needs `TWITCH_CLIENT_ID` /
+`TWITCH_CLIENT_SECRET`; results are review hints, missing logins are reported, never guessed):
+
+```bash
+finder resolve-twitch -file logins.txt -out twitch-ids.json
 ```
 
 Export reviewed handoff proposals:
