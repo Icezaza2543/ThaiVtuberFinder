@@ -30,7 +30,7 @@
       "kind": "tipjai",
       "enabled": true,
       "url": "https://tipjai.com/discover/vtuber",
-      "max_pages": 300,
+      "max_pages": 100,
       "max_items": 3000
     },
     {
