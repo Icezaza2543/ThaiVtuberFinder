@@ -87,7 +87,7 @@ func (c Config) Validate() error {
 			return errors.New("source limit out of bounds")
 		}
 		switch s.Kind {
-		case "kerlos", "html", "jsonl", "csv", "json", "bluesky_list", "bluesky_starterpack", "youtube_search", "raw_links", "vtuberthaiinfo":
+		case "kerlos", "html", "jsonl", "csv", "json", "bluesky_list", "bluesky_starterpack", "youtube_search", "raw_links", "vtuberthaiinfo", "tipjai":
 		default:
 			return fmt.Errorf("unsupported source: %s", s.Kind)
 		}
