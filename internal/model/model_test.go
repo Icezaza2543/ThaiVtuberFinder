@@ -9,6 +9,8 @@ func TestNormalize(t *testing.T) {
 		{"https://twitter.com/EXAMPLE/status/123", "x", "", "example", "https://x.com/example"},
 		{"https://twitch.tv/Example/about", "twitch", "", "example", "https://www.twitch.tv/example"},
 		{"https://bsky.app/profile/did:plc:abcdef", "bluesky", "did:plc:abcdef", "", "https://bsky.app/profile/did:plc:abcdef"},
+		{"https://tipjai.com/Abel_VT", "tipjai", "", "abel_vt", "https://tipjai.com/abel_vt"},
+		{"https://tipnoi.app/kumo", "tipnoi", "", "kumo", "https://tipnoi.app/kumo"},
 		{"https://easydonate.app/Mick_Oji", "easydonate", "", "mick_oji", "https://easydonate.app/mick_oji"},
 		{"https://youtu.be/abcdefghijk", "youtube_video", "abcdefghijk", "", "https://www.youtube.com/watch?v=abcdefghijk"},
 	}
@@ -25,7 +27,7 @@ func TestNormalize(t *testing.T) {
 	}
 }
 func TestNormalizeRejects(t *testing.T) {
-	for _, raw := range []string{"javascript:alert(1)", "https://youtube.com.evil.test/@x", "https://youtube.com/channel/bad", "https://youtube.com/results?search_query=x", "https://youtube.com/", "https://user:pass@twitch.tv/example", "http://127.0.0.1/x", "https://twitch.tv/directory", "https://easydonate.app/discovery", "https://easydonate.app/api/x", "https://easydonate.app/"} {
+	for _, raw := range []string{"javascript:alert(1)", "https://youtube.com.evil.test/@x", "https://youtube.com/channel/bad", "https://youtube.com/results?search_query=x", "https://youtube.com/", "https://user:pass@twitch.tv/example", "http://127.0.0.1/x", "https://twitch.tv/directory", "https://easydonate.app/discovery", "https://easydonate.app/api/x", "https://easydonate.app/", "https://tipjai.com/discover/vtuber", "https://tipjai.com/apple-icon.png"} {
 		if _, err := Normalize(raw); err == nil {
 			t.Errorf("accepted %s", raw)
 		}

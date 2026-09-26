@@ -176,6 +176,12 @@ func Normalize(raw string) (Account, error) {
 			}
 			return profile("facebook", p, "https://www.facebook.com/")
 		}
+	case "tipjai.com", "tipnoi.app":
+		// Thai donation pages. Slug only; payment details (PromptPay etc.) are never read or stored.
+		if len(parts) != 1 || strings.Contains("|discover|blog|for|creator-fund|dashboard|onboarding|api|overlay|auth|verify|link|login|signup|register|settings|terms|privacy|about|pricing|help|docs|guide|changelog|brand|feedback|investors|how-it-works|discord|", "|"+strings.ToLower(p)+"|") || strings.Contains(p, ".") {
+			return reject()
+		}
+		return profile(strings.TrimSuffix(strings.TrimSuffix(host, ".com"), ".app"), p, "https://"+host+"/")
 	case "easydonate.app":
 		// Creator donation page. Slug only; payment details are never read or stored.
 		if len(parts) != 1 || strings.Contains("|discovery|dashboard|api|login|register|signup|settings|terms|privacy|about|pricing|help|docs|", "|"+strings.ToLower(p)+"|") {

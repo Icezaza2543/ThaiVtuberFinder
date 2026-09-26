@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	urlRegex      = regexp.MustCompile(`(?i)\b(?:https?://|www\.)[^\s<>()"']+|\b(?:youtube\.com|youtu\.be|twitch\.tv|twitter\.com|x\.com|tiktok\.com|instagram\.com|facebook\.com|[a-z0-9_-]+\.carrd\.co|linktr\.ee|lit\.link|bio\.site|easydonate\.app)/[^\s<>()"']*`)
+	urlRegex      = regexp.MustCompile(`(?i)\b(?:https?://|www\.)[^\s<>()"']+|\b(?:youtube\.com|youtu\.be|twitch\.tv|twitter\.com|x\.com|tiktok\.com|instagram\.com|facebook\.com|[a-z0-9_-]+\.carrd\.co|linktr\.ee|lit\.link|bio\.site|easydonate\.app|tipjai\.com|tipnoi\.app)/[^\s<>()"']*`)
 	leadingPunct  = regexp.MustCompile(`^[\s"'<(\[{]+`)
 	trailingPunct = regexp.MustCompile(`[^\w/+=?&~#-]+$`)
 )
