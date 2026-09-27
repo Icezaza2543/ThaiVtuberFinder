@@ -26,6 +26,13 @@
       "max_items": 10000
     },
     {
+      "name": "agency-rosters-2026-09-27",
+      "kind": "jsonl",
+      "enabled": true,
+      "path": "config/seeds/agency-rosters-2026-09-27.jsonl",
+      "max_items": 5000
+    },
+    {
       "name": "twitch-thai-vtubers",
       "kind": "twitch_th",
       "enabled": true,
