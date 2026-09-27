@@ -56,6 +56,10 @@ Current adapters support bounded, explicit public sources such as:
 | HTML roster | Extracts supported account links from explicitly configured static pages |
 | JSON/JSONL/CSV | Imports curated lead/export files |
 | YouTube | Resolves explicit channel/handle/video/Shorts/live URLs; broad search remains opt-in and quota-bounded |
+| Twitch (`twitch_th`) | Each cycle samples Thai-language live streams + channel search via Helix, keeping broadcasters with a VTuber signal; coverage accumulates over cycles (needs `TWITCH_CLIENT_ID/SECRET`) |
+| Tipjai (`tipjai`) | Reads `/discover/vtuber` and each creator page; site header/footer links and non-creator pages are excluded |
+| Seed files (`config/seeds/*.jsonl`) | Researched lists (agency rosters, public directories) as `jsonl` sources; candidates only |
+| Gank / SociaBuzz / EasyDonate / Tipjai / TipNoi links | Normalised as platforms when found in bios; none of these sites has a crawlable directory except Tipjai |
 
 Cross-platform enrichment records explicit profile/bio evidence and can create
 `pending_review` relation proposals. It does **not** auto-link those accounts to a
