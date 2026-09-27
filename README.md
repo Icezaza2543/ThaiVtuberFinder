@@ -38,6 +38,7 @@ flowchart LR
 - A new persona/model/re-debut remains a separate persona until explicitly reviewed.
 - Similar names, voices, artwork, handles, or presumed shared operators never justify automatic persona merging.
 - Organization/group accounts stay separate from individual personas.
+- Personas with `review_status=merged` (owner merge, 2026-09-27) are not live; their accounts now link to the kept persona. Match new finds against verified personas only.
 - Source membership is a discovery signal, not automatic verification (exception: the owner-approved VtuberThaiInfo trusted base, applied in ThaiVtuber_DATA, not by Finder).
 - Existing curator fields in `FINDER_INBOX` are preserved during machine sync.
 - `source_url`/provenance must remain traceable.
