@@ -141,3 +141,102 @@ func (r *Resolver) Resolve(ctx context.Context, logins []string) ([]Result, erro
 	}
 	return out, nil
 }
+
+// Channel is a Twitch broadcaster found by ThaiVTubers.
+type Channel struct {
+	Login, DisplayName, UserID, How string
+}
+
+var virtualSignal = regexp.MustCompile(`(?i)vtuber|vtube|v-tuber|pngtuber|vsinger|วีทูป|วีทูบ|live2d`)
+
+func (r *Resolver) getJSON(ctx context.Context, url string, out any) error {
+	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Client-Id", r.ClientID)
+	req.Header.Set("Authorization", "Bearer "+r.token)
+	res, err := r.client().Do(req)
+	if err != nil {
+		return errors.New("twitch request failed")
+	}
+	defer res.Body.Close()
+	if res.StatusCode != 200 {
+		return fmt.Errorf("twitch request rejected: HTTP %d", res.StatusCode)
+	}
+	return json.NewDecoder(io.LimitReader(res.Body, 8<<20)).Decode(out)
+}
+
+// ThaiVTubers returns broadcasters with language "th" whose tags/title show a
+// virtual-creator signal: current Thai live streams plus channel search results.
+// Each call is a snapshot; running it every worker cycle accumulates coverage.
+func (r *Resolver) ThaiVTubers(ctx context.Context, queries []string, maxPages int) ([]Channel, error) {
+	if err := r.auth(ctx); err != nil {
+		return nil, err
+	}
+	base := r.APIBase
+	if base == "" {
+		base = "https://api.twitch.tv/helix"
+	}
+	seen := map[string]Channel{}
+	cursor := ""
+	for page := 0; page < maxPages; page++ {
+		var raw struct {
+			Data []struct {
+				UserLogin string   `json:"user_login"`
+				UserName  string   `json:"user_name"`
+				UserID    string   `json:"user_id"`
+				Title     string   `json:"title"`
+				Tags      []string `json:"tags"`
+			} `json:"data"`
+			Pagination struct {
+				Cursor string `json:"cursor"`
+			} `json:"pagination"`
+		}
+		q := url.Values{"language": {"th"}, "first": {"100"}}
+		if cursor != "" {
+			q.Set("after", cursor)
+		}
+		if err := r.getJSON(ctx, base+"/streams?"+q.Encode(), &raw); err != nil {
+			return nil, err
+		}
+		for _, s := range raw.Data {
+			if virtualSignal.MatchString(s.Title + " " + strings.Join(s.Tags, " ")) {
+				seen[strings.ToLower(s.UserLogin)] = Channel{strings.ToLower(s.UserLogin), s.UserName, s.UserID, "live stream (th)"}
+			}
+		}
+		if cursor = raw.Pagination.Cursor; cursor == "" {
+			break
+		}
+	}
+	for _, query := range queries {
+		var raw struct {
+			Data []struct {
+				Login    string   `json:"broadcaster_login"`
+				Name     string   `json:"display_name"`
+				ID       string   `json:"id"`
+				Language string   `json:"broadcaster_language"`
+				Title    string   `json:"title"`
+				Tags     []string `json:"tags"`
+			} `json:"data"`
+		}
+		q := url.Values{"query": {query}, "first": {"100"}}
+		if err := r.getJSON(ctx, base+"/search/channels?"+q.Encode(), &raw); err != nil {
+			return nil, err
+		}
+		for _, c := range raw.Data {
+			text := c.Name + " " + c.Title + " " + strings.Join(c.Tags, " ")
+			if c.Language == "th" && virtualSignal.MatchString(text) {
+				login := strings.ToLower(c.Login)
+				if _, ok := seen[login]; !ok {
+					seen[login] = Channel{login, c.Name, c.ID, "search " + query}
+				}
+			}
+		}
+	}
+	out := make([]Channel, 0, len(seen))
+	for _, c := range seen {
+		out = append(out, c)
+	}
+	return out, nil
+}

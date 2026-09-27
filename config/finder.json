@@ -26,6 +26,13 @@
       "max_items": 10000
     },
     {
+      "name": "twitch-thai-vtubers",
+      "kind": "twitch_th",
+      "enabled": true,
+      "max_pages": 20,
+      "max_items": 2000
+    },
+    {
       "name": "tipjai-vtuber",
       "kind": "tipjai",
       "enabled": true,

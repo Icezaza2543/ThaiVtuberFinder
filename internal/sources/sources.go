@@ -102,6 +102,8 @@ func (e *Engine) Discover(ctx context.Context, c Config) ([]Lead, error) {
 		return ParseVtuberThaiInfo(string(b), c.URL, limit)
 	case "tipjai":
 		return e.tipjai(ctx, c, limit)
+	case "twitch_th":
+		return e.twitchThai(ctx, c, limit)
 	case "youtube_search":
 		return e.searchYouTube(ctx, c, limit)
 	default:
