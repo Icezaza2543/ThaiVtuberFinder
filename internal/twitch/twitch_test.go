@@ -46,3 +46,29 @@ func TestResolveRequiresCredentials(t *testing.T) {
 		t.Fatal("expected error")
 	}
 }
+
+func TestThaiVTubers(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case "/oauth2/token":
+			w.Write([]byte(`{"access_token":"tok"}`))
+		case "/helix/streams":
+			w.Write([]byte(`{"data":[{"user_login":"MiaVT","user_name":"Mia","user_id":"1","title":"ไลฟ์เกม","tags":["VTuber","ภาษาไทย"]},{"user_login":"gamer","user_name":"G","user_id":"2","title":"rank push","tags":["FPS"]}],"pagination":{}}`))
+		case "/helix/search/channels":
+			w.Write([]byte(`{"data":[{"broadcaster_login":"kumo","display_name":"Kumo","id":"3","broadcaster_language":"th","title":"PNGTuber chill","tags":[]},{"broadcaster_login":"jpvt","display_name":"JP","id":"4","broadcaster_language":"ja","title":"VTuber","tags":["VTuber"]}]}`))
+		}
+	}))
+	defer srv.Close()
+	r := &Resolver{ClientID: "cid", ClientSecret: "sec", AuthBase: srv.URL, APIBase: srv.URL + "/helix"}
+	got, err := r.ThaiVTubers(context.Background(), []string{"vtuber"}, 3)
+	if err != nil {
+		t.Fatal(err)
+	}
+	logins := map[string]bool{}
+	for _, c := range got {
+		logins[c.Login] = true
+	}
+	if len(got) != 2 || !logins["miavt"] || !logins["kumo"] {
+		t.Fatalf("want miavt+kumo, got %+v", got)
+	}
+}
