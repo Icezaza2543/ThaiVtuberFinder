@@ -15,3 +15,4 @@ bin/
 *.key
 coverage.out
 .superpowers/
+.claude/settings.local.json
