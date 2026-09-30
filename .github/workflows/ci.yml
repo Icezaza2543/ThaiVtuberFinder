@@ -8,6 +8,8 @@ jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    env:
+      CGO_ENABLED: '1'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -16,8 +18,8 @@ jobs:
           cache: false
       - run: sudo apt-get update && sudo apt-get install -y libsqlite3-dev pkg-config
       - run: test -z "$(gofmt -l cmd internal)"
-      - run: go vet ./...
       - run: go test -race -count=1 -coverprofile=coverage.out ./...
-      - run: go build -trimpath -o finder ./cmd/finder
-      - run: ./finder demo
+      - run: go vet ./...
+      - run: go build ./cmd/finder
+      - run: go run ./cmd/finder demo
       - run: docker build -t thaivtuberfinder:ci .
