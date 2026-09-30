@@ -47,6 +47,13 @@
       "max_items": 5000
     },
     {
+      "name": "x-profile-websites-resolved-2026-10-01",
+      "kind": "jsonl",
+      "enabled": true,
+      "path": "config/seeds/x-profile-websites-resolved-2026-10-01.jsonl",
+      "max_items": 5000
+    },
+    {
       "name": "twitch-thai-vtubers",
       "kind": "twitch_th",
       "enabled": true,
