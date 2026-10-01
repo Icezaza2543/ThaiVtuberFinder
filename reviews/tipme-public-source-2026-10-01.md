@@ -31,4 +31,6 @@ No authenticated creator dashboard, internal API, payment record, supporter iden
 
 Regression tests cover Tipme URL normalization, reserved non-profile routes, bio extraction and JSONL preservation of stable channel evidence. The URL and bio tests failed before support was added and passed afterwards. The full native SQLite/race checks require Linux CI: local Windows has no CGO compiler, and the installed WSL distribution references a missing disk.
 
-The runtime import must first run with Sheet sync disabled, then use the existing Finder writer for FINDER_INBOX, followed by `finder verify` with `canonical_invariant_ok: true` and `duplicate_inbox_rows: 0`. Inbox write and production verification counts will be recorded after that flow succeeds; discovery counts alone are not an inbox write claim.
+The runtime import must first run with Sheet sync disabled, then use the existing Finder writer for FINDER_INBOX, followed by `finder verify` with `canonical_invariant_ok: true` and `duplicate_inbox_rows: 0`.
+
+Production import is blocked before the first write: the official `railway ssh -- finder verify -config /app/config/finder.json` command, with the documented Windows `MSYS_NO_PATHCONV=1` setting, stops at an unknown SSH host key for `ssh.railway.com`. The host key was not accepted or bypassed. Inbox rows written: **0**. Production verification was not completed. The 100 runtime leads are staged for the existing writer once the normal SSH trust issue is resolved; a staged discovery count is not an inbox write claim.
