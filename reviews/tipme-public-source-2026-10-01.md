@@ -29,8 +29,24 @@ No authenticated creator dashboard, internal API, payment record, supporter iden
 
 ## Verification
 
-Regression tests cover Tipme URL normalization, reserved non-profile routes, bio extraction and JSONL preservation of stable channel evidence. The URL and bio tests failed before support was added and passed afterwards. The full native SQLite/race checks require Linux CI: local Windows has no CGO compiler, and the installed WSL distribution references a missing disk.
+Regression tests cover Tipme URL normalization, reserved non-profile routes, bio extraction and JSONL preservation of stable channel evidence. The URL and bio tests failed before support was added and passed afterwards. Linux CI passed the full race suite, vet, build, demo and Docker build before [PR #20](https://github.com/Icezaza2543/ThaiVtuberFinder/pull/20) merged as `9bb11ec`. Local Windows has no CGO compiler, and the installed WSL distribution references a missing disk.
 
 The runtime import must first run with Sheet sync disabled, then use the existing Finder writer for FINDER_INBOX, followed by `finder verify` with `canonical_invariant_ok: true` and `duplicate_inbox_rows: 0`.
 
-Production import is blocked before the first write: the official `railway ssh -- finder verify -config /app/config/finder.json` command, with the documented Windows `MSYS_NO_PATHCONV=1` setting, stops at an unknown SSH host key for `ssh.railway.com`. The host key was not accepted or bypassed. Inbox rows written: **0**. Production verification was not completed. The 100 runtime leads are staged for the existing writer once the normal SSH trust issue is resolved; a staged discovery count is not an inbox write claim.
+The initial official Railway SSH command stopped at an unknown host key. After the owner approved the exact displayed ED25519 fingerprint, that key was accepted through the normal CLI prompt with host-key checking retained. Production verification then succeeded.
+
+The first sync-disabled dry run rejected a trailing U+200B delimiter in one exported URL, `tipme.in.th/aluchan111`. Trimming that delimiter preserved its stable channel evidence. The corrected dry run completed with **100 found, 100 stored, zero source failures and zero Sheet updates**, in a separate temporary database before the normal worker started.
+
+Deployment `510d959d-f4ac-49a1-aa59-f161db7c4449` is healthy. Every non-Tipme source was compared to production and preserved. The normal single Finder worker completed its cycle at 2026-10-01 13:52:21 UTC, with **100 Tipme leads found/stored**, zero resolution errors, zero failed sources, and 10,778 machine-field range updates across the complete existing inbox. These range updates are not a count of newly appended people.
+
+| Production verification | Before | After |
+| --- | ---: | ---: |
+| PERSONAS | 3,396 | 3,396 |
+| ACCOUNTS | 8,037 | 8,037 |
+| ACCOUNT_LINKS | 7,040 | 7,040 |
+| FINDER_INBOX | 5,655 | 5,766 |
+| Finder candidates | 5,680 | 5,794 |
+| Duplicate inbox rows | 0 | 0 |
+| Duplicate inbox keys | 0 | 0 |
+
+`canonical_invariant_ok` remained `true`. The full worker cycle also processed the existing sources, so the 111 appended inbox rows and 114 additional candidates must not be attributed entirely to Tipme. The Tipme source contributed 100 explicit donation-page candidates for review; its slugs remain unresolved handles.
