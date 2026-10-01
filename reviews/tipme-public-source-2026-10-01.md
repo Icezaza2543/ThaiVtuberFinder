@@ -50,3 +50,5 @@ Deployment `510d959d-f4ac-49a1-aa59-f161db7c4449` is healthy. Every non-Tipme so
 | Duplicate inbox keys | 0 | 0 |
 
 `canonical_invariant_ok` remained `true`. The full worker cycle also processed the existing sources, so the 111 appended inbox rows and 114 additional candidates must not be attributed entirely to Tipme. The Tipme source contributed 100 explicit donation-page candidates for review; its slugs remain unresolved handles.
+
+An independent read of FINDER_INBOX confirmed **100 Tipme rows, 100 distinct candidate IDs, 100 distinct Tipme URLs, 100 empty platform IDs, and 100 stable YouTube channel evidence URLs**. No slug was presented as a stable Tipme ID, and no persona matching by name was performed.
