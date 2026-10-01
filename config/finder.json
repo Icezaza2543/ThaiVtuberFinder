@@ -76,6 +76,13 @@
       "max_items": 1000
     },
     {
+      "name": "tipme-official-profile-links",
+      "kind": "jsonl",
+      "enabled": false,
+      "path": "data/tipme-leads.jsonl",
+      "max_items": 1000
+    },
+    {
       "name": "curated-event-roster",
       "kind": "html",
       "enabled": false,

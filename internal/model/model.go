@@ -188,6 +188,12 @@ func Normalize(raw string) (Account, error) {
 			return reject()
 		}
 		return profile(strings.TrimSuffix(strings.TrimSuffix(host, ".com"), ".app"), p, "https://"+host+"/")
+	case "tipme.in.th":
+		// Explicit creator link only. A mutable slug is not a stable platform ID.
+		if len(parts) != 1 || strings.Contains("|discover|discovery|dashboard|statistics|stats|transactions|receipts|decorate|withdraw|account|api|overlay|auth|login|logout|register|signup|settings|terms|privacy|about|help|support|docs|status|", "|"+strings.ToLower(p)+"|") || strings.Contains(p, ".") {
+			return reject()
+		}
+		return profile("tipme", p, "https://tipme.in.th/")
 	case "easydonate.app":
 		// Creator donation page. Slug only; payment details are never read or stored.
 		if len(parts) != 1 || strings.Contains("|discovery|dashboard|api|login|register|signup|settings|terms|privacy|about|pricing|help|docs|", "|"+strings.ToLower(p)+"|") {
