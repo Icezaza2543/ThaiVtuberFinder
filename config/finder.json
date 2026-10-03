@@ -54,6 +54,13 @@
       "max_items": 500
     },
     {
+      "name": "grok-research-2026-10-04b",
+      "kind": "jsonl",
+      "enabled": true,
+      "path": "config/seeds/grok-research-2026-10-04b.jsonl",
+      "max_items": 1000
+    },
+    {
       "name": "x-profile-websites-2026-09-30",
       "kind": "jsonl",
       "enabled": true,
