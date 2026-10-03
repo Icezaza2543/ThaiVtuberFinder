@@ -117,6 +117,13 @@
       "max_items": 100
     },
     {
+      "name": "x-profile-bios-2026-10-04",
+      "kind": "jsonl",
+      "enabled": true,
+      "path": "config/seeds/x-profile-bios-2026-10-04.jsonl",
+      "max_items": 100
+    },
+    {
       "name": "x-profile-websites-2026-09-30",
       "kind": "jsonl",
       "enabled": true,
