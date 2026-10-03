@@ -96,6 +96,27 @@
       "max_items": 100
     },
     {
+      "name": "grok-research-2026-10-04f",
+      "kind": "jsonl",
+      "enabled": true,
+      "path": "config/seeds/grok-research-2026-10-04f.jsonl",
+      "max_items": 100
+    },
+    {
+      "name": "grok-agency-accounts-2026-10-04f",
+      "kind": "jsonl",
+      "enabled": true,
+      "path": "config/seeds/grok-agency-accounts-2026-10-04f.jsonl",
+      "max_items": 100
+    },
+    {
+      "name": "x-profile-websites-2026-10-04",
+      "kind": "jsonl",
+      "enabled": true,
+      "path": "config/seeds/x-profile-websites-2026-10-04.jsonl",
+      "max_items": 100
+    },
+    {
       "name": "x-profile-websites-2026-09-30",
       "kind": "jsonl",
       "enabled": true,
