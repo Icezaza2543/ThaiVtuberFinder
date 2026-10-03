@@ -25,6 +25,8 @@ grok "อ่าน docs/GROK_RESEARCH_PROMPT.md แล้วทำตามท�
 
 1. อ่าน `"url"` จาก `config/seeds/*.jsonl` และ `config/easydonate-seed.jsonl` ทุกไฟล์
 2. อ่าน `data/grok/*.jsonl` ที่เคยส่งไปแล้ว (ถ้ามี) เพื่อไม่ให้ส่งซ้ำ
+   และอ่าน URL ทั้งหมดใน `../ThaiVtuberMaster/web/data/site.json` (ทะเบียนที่เผยแพร่แล้ว อ่านอย่างเดียว)
+   รอบที่แล้ว 18 จาก 42 แถวซ้ำกับไฟล์นี้
 3. normalize ก่อนเทียบ: ตัด `https://`, `www.`, `/` ท้าย, เปลี่ยน `twitter.com` เป็น `x.com` และเทียบแบบตัวพิมพ์เล็ก
    สำหรับ YouTube ให้เทียบด้วยรหัส `UC…` ด้วย
 4. ถ้าอยู่ใน skip set แล้ว ห้ามส่งซ้ำ ทะเบียนจริงใหญ่กว่านี้ ฝั่งเราจะตัดซ้ำอีกรอบ
@@ -36,6 +38,11 @@ grok "อ่าน docs/GROK_RESEARCH_PROMPT.md แล้วทำตามท�
 - vtuber.chuysan.com: เป็นแหล่งเดียวกับ `kerlos-chuysan-directory` ที่ Finder ดึงทุกรอบอยู่แล้ว
 - vtuberthaiinfo archive, Twitch TH, Tipjai, Tipme, Bluesky search (Finder มี adapter แล้ว)
 - Echoria part 1–2, Prismx (Mythical Soul set 1–2, Me1odyne, .NXT), โควตเธรด MasshiiMaro
+
+## ขอบเขต
+
+เก็บทุกคนที่เป็นวี ไม่ว่าจะเดบิวต์แล้ว กำลังจะเดบิวต์ หรือเลิกไปแล้ว
+VReader และประเภทอื่นที่เป็นวีให้ใช้ `type=other_v` ส่วนบัญชีของค่ายให้เก็บด้วย `type=organization`
 
 ## Frontier เรียงตามลำดับความสำคัญ
 
