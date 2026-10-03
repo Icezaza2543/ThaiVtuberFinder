@@ -88,6 +88,8 @@ func (e *Engine) Discover(ctx context.Context, c Config) ([]Lead, error) {
 		return parseCSV(r, limit)
 	case "bluesky_list", "bluesky_starterpack":
 		return e.bluesky(ctx, c, limit)
+	case "bluesky_search":
+		return e.blueskySearch(ctx, c, limit)
 	case "raw_links":
 		b, err := e.Client.Bytes(ctx, "GET", c.URL, nil, nil, nil)
 		if err != nil {

@@ -140,3 +140,25 @@ func TestParseVtuberThaiInfo(t *testing.T) {
 		t.Fatal("schema drift hidden")
 	}
 }
+
+func TestBlueskySearchFiltersThaiVTubers(t *testing.T) {
+	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/xrpc/app.bsky.actor.searchActors" {
+			t.Errorf("unexpected path %s", r.URL.Path)
+		}
+		w.Write([]byte(`{"actors":[` +
+			`{"did":"did:plc:th","handle":"th.bsky.social","displayName":"Mint | VtuberTH"},` +
+			`{"did":"did:plc:jp","handle":"jp.bsky.social","displayName":"Mochi VTuber","description":"JP/EN streamer"},` +
+			`{"did":"did:plc:fan","handle":"fan.bsky.social","displayName":"แฟนคลับ","description":"ชอบดูสตรีม"},` +
+			`{"did":"did:plc:th","handle":"th.bsky.social","displayName":"Mint | VtuberTH"}]}`))
+	}))
+	defer s.Close()
+	e := Engine{Client: &netx.Client{HTTP: s.Client()}, BlueskyBase: s.URL}
+	items, err := e.Discover(context.Background(), Config{Name: "search", Kind: "bluesky_search", Query: "vtuberth|วีทูปเบอร์", MaxPages: 1, MaxItems: 20})
+	if err != nil || len(items) != 1 {
+		t.Fatal(err, items)
+	}
+	if items[0].Account.PlatformID != "did:plc:th" || items[0].Account.ClassificationHint != "" {
+		t.Fatalf("lead: %+v", items[0].Account)
+	}
+}

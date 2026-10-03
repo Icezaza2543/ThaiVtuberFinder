@@ -40,6 +40,13 @@
       "max_items": 5000
     },
     {
+      "name": "hololist-thai-2026-10-04",
+      "kind": "jsonl",
+      "enabled": true,
+      "path": "config/seeds/hololist-thai-2026-10-04.jsonl",
+      "max_items": 100
+    },
+    {
       "name": "x-profile-websites-2026-09-30",
       "kind": "jsonl",
       "enabled": true,
@@ -192,6 +199,14 @@
       "url": "https://bsky.app/starter-pack/pipekun.bsky.social/3l6qwms7d3w26",
       "max_pages": 10,
       "max_items": 500
+    },
+    {
+      "name": "vtuberth-bluesky-search",
+      "kind": "bluesky_search",
+      "enabled": true,
+      "query": "vtuberth|vtuber ไทย|วีทูปเบอร์|thai vtuber",
+      "max_pages": 5,
+      "max_items": 2000
     },
     {
       "name": "arp-official-roster",
